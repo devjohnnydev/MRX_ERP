@@ -1,9 +1,4 @@
-Perfeito, Johnny. Abaixo está um **README.md completo, moderno e profissional**, com badges, seções bem estruturadas, ícones, e detalhes técnicos para o repositório **MRX_ERP**.
-Pronto para subir direto ao GitHub.
 
----
-
-````markdown
 # 💼 MRX Gestão ERP  
 **Sistema de Gestão Empresarial – Flask + SQLAlchemy + Docker**
 
