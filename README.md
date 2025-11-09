@@ -277,18 +277,4 @@ Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-### 💾 Como salvar rapidamente pelo PowerShell
 
-```powershell
-@'
-(COLE O CONTEÚDO COMPLETO DO README ACIMA)
-'@ | Set-Content -Encoding UTF8 README.md
-
-git add README.md
-git commit -m "docs: add modern README"
-git push
-```
-
----
-
-Quer que eu gere também um **banner visual em HTML (ou PNG)** com o logo MRX e o título *“MRX Gestão ERP – Sistema Empresarial Flask”* para colocar no topo do README (como capa)? Isso deixaria seu repositório ainda mais profissional. Deseja que eu crie?
