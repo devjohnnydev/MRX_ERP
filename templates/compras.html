@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Compras - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Gerenciar Compras</h3>
+    </div>
+    <div class="card-body">
+        <button class="btn btn-primary" onclick="toggleForm()">+ Nova Compra</button>
+        
+        <!-- Formulário de Cadastro -->
+        <div id="formContainer" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background-color: var(--cor-cinza-escuro); border-radius: 4px;">
+            <h4 style="color: var(--cor-verde-claro); margin-bottom: 1rem;">Cadastrar Nova Compra</h4>
+            <form method="POST" action="{{ url_for('compras') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fornecedor_id">Fornecedor *</label>
+                        <select id="fornecedor_id" name="fornecedor_id" required>
+                            <option value="">Selecione um fornecedor</option>
+                            {% for fornecedor in fornecedores %}
+                                <option value="{{ fornecedor.id }}">{{ fornecedor.nome_social }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="material">Material *</label>
+                        <input type="text" id="material" name="material" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="valor_tabela">Valor *</label>
+                        <input type="number" id="valor_tabela" name="valor_tabela" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_coleta">Tipo de Coleta *</label>
+                        <select id="tipo_coleta" name="tipo_coleta" required>
+                            <option value="">Selecione</option>
+                            <option value="coleta">Coleta</option>
+                            <option value="entrega">Entrega</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group form-row full">
+                    <label for="observacao">Observação</label>
+                    <textarea id="observacao" name="observacao"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tabela de Compras -->
+        <div style="margin-top: 1.5rem;">
+            {% if compras.items %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Fornecedor</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for compra in compras.items %}
+                            <tr>
+                                <td>{{ compra.material }}</td>
+                                <td>{{ compra.fornecedor.nome_social }}</td>
+                                <td>R$ {{ "%.2f"|format(compra.valor_tabela) }}</td>
+                                <td>{{ compra.tipo_coleta }}</td>
+                                <td>{{ compra.data.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ url_for('editar_compra', id=compra.id) }}" class="btn btn-secondary btn-small">Editar</a>
+                                        <form method="POST" action="{{ url_for('deletar_compra', id=compra.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta compra?');">
+                                            <button type="submit" class="btn btn-danger btn-small">Deletar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Paginação -->
+                {% if compras.pages > 1 %}
+                    <ul class="pagination">
+                        {% if compras.has_prev %}
+                            <li><a href="{{ url_for('compras', page=compras.prev_num) }}">« Anterior</a></li>
+                        {% endif %}
+                        
+                        {% for page_num in compras.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num == compras.page %}
+                                    <li><span class="active">{{ page_num }}</span></li>
+                                {% else %}
+                                    <li><a href="{{ url_for('compras', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if compras.has_next %}
+                            <li><a href="{{ url_for('compras', page=compras.next_num) }}">Próxima »</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Nenhuma compra cadastrada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById('formContainer');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Despesas - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Gerenciar Despesas</h3>
+    </div>
+    <div class="card-body">
+        <button class="btn btn-primary" onclick="toggleForm()">+ Nova Despesa</button>
+        
+        <!-- Formulário de Cadastro -->
+        <div id="formContainer" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background-color: var(--cor-cinza-escuro); border-radius: 4px;">
+            <h4 style="color: var(--cor-verde-claro); margin-bottom: 1rem;">Cadastrar Nova Despesa</h4>
+            <form method="POST" action="{{ url_for('despesas') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome_social">Nome Social *</label>
+                        <input type="text" id="nome_social" name="nome_social" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor">Valor *</label>
+                        <input type="number" id="valor" name="valor" step="0.01" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data *</label>
+                        <input type="date" id="data" name="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="forma_pagamento">Forma de Pagamento</label>
+                        <select id="forma_pagamento" name="forma_pagamento">
+                            <option value="">Selecione</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="pix">PIX</option>
+                            <option value="ted">TED</option>
+                            <option value="boleto">Boleto</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="endereco_rua">Rua</label>
+                        <input type="text" id="endereco_rua" name="endereco_rua">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco_numero">Número</label>
+                        <input type="text" id="endereco_numero" name="endereco_numero">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="endereco_cidade">Cidade</label>
+                        <input type="text" id="endereco_cidade" name="endereco_cidade">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco_estado">Estado</label>
+                        <input type="text" id="endereco_estado" name="endereco_estado" maxlength="2">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="endereco_cep">CEP</label>
+                        <input type="text" id="endereco_cep" name="endereco_cep">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="tel" id="telefone" name="telefone">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="banco">Banco</label>
+                        <input type="text" id="banco" name="banco">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="agencia">Agência</label>
+                        <input type="text" id="agencia" name="agencia">
+                    </div>
+                    <div class="form-group">
+                        <label for="conta">Conta</label>
+                        <input type="text" id="conta" name="conta">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="chave_pix">Chave PIX</label>
+                        <input type="text" id="chave_pix" name="chave_pix">
+                    </div>
+                    <div class="form-group">
+                        <label for="condicao_pagamento">Condição de Pagamento</label>
+                        <select id="condicao_pagamento" name="condicao_pagamento">
+                            <option value="">Selecione</option>
+                            <option value="a_vista">À Vista</option>
+                            <option value="parcelado">Parcelado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group form-row full">
+                    <label for="descricao_gasto">Descrição do Gasto</label>
+                    <textarea id="descricao_gasto" name="descricao_gasto"></textarea>
+                </div>
+                
+                <div class="form-group form-row full">
+                    <label for="observacao">Observação</label>
+                    <textarea id="observacao" name="observacao"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tabela de Despesas -->
+        <div style="margin-top: 1.5rem;">
+            {% if despesas.items %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Valor</th>
+                            <th>Forma de Pagamento</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for despesa in despesas.items %}
+                            <tr>
+                                <td>{{ despesa.nome_social }}</td>
+                                <td>R$ {{ "%.2f"|format(despesa.valor) }}</td>
+                                <td>{{ despesa.forma_pagamento or '-' }}</td>
+                                <td>{{ despesa.data.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ url_for('editar_despesa', id=despesa.id) }}" class="btn btn-secondary btn-small">Editar</a>
+                                        <form method="POST" action="{{ url_for('deletar_despesa', id=despesa.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta despesa?');">
+                                            <button type="submit" class="btn btn-danger btn-small">Deletar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Paginação -->
+                {% if despesas.pages > 1 %}
+                    <ul class="pagination">
+                        {% if despesas.has_prev %}
+                            <li><a href="{{ url_for('despesas', page=despesas.prev_num) }}">« Anterior</a></li>
+                        {% endif %}
+                        
+                        {% for page_num in despesas.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num == despesas.page %}
+                                    <li><span class="active">{{ page_num }}</span></li>
+                                {% else %}
+                                    <li><a href="{{ url_for('despesas', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if despesas.has_next %}
+                            <li><a href="{{ url_for('despesas', page=despesas.next_num) }}">Próxima »</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Nenhuma despesa cadastrada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById('formContainer');
+    form.classList.toggle('hidden');
+}
+
+// Definir data padrão para hoje
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const dataInput = document.getElementById('data');
+    if (dataInput && !dataInput.value) {
+        dataInput.value = today;
+    }
+});
+</script>
+{% endblock %}

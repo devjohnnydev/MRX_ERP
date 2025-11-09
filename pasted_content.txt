@@ -1,0 +1,248 @@
+Crie um sistema web completo em Python + Flask com o tema verde e preto (seguindo a identidade visual do logotipo MRX do Brasil).
+Inclua um painel administrativo, autenticação com login/senha e permissões de acesso.
+
+🧩 Stack Técnica
+
+Backend: Flask, Flask-SQLAlchemy, Flask-Login, Flask-Migrate, Flask-CORS
+
+Banco: SQLite (arquivo local mrx.db)
+
+Frontend: HTML + CSS (verde/preto) + Bootstrap ou Tailwind (preferência verde escuro #004d00 e preto #000000)
+
+Autenticação: Login + senha criptografada (bcrypt)
+
+Roles: ADMIN, COMPRADOR, VISUALIZADOR
+
+ADMIN pode cadastrar compradores e liberar permissões
+
+Uploads: pasta /static/uploads
+
+Logo: usar /static/img/logo.png e /static/img/escudo.png (inserir os arquivos enviados pelo usuário)
+
+🧑‍💻 Usuário Administrador Padrão
+
+Email: admin@mrx.com.br
+
+Senha: Admin@123
+
+Papel: ADMIN
+
+🗂️ Tabelas e Campos (SQLite + SQLAlchemy)
+1. Funcionários (634)
+
+Tabela: funcionarios
+
+id (pk)
+
+nome
+
+cpf
+
+telefone
+
+cargo
+
+2. Fornecedores (704)
+
+Tabela: fornecedores
+
+id (pk)
+
+nome_social
+
+cnpj
+
+cpf
+
+endereco_coleta
+
+endereco_emissao
+
+telefone
+
+email
+
+3. Despesas Adicionais (631)
+
+Tabela: despesas
+
+id (pk)
+
+nome_social
+
+endereco_rua
+
+endereco_numero
+
+endereco_cidade
+
+endereco_cep
+
+endereco_estado
+
+telefone
+
+email
+
+vendedor_id (fk → usuários)
+
+conta
+
+agencia
+
+chave_pix
+
+banco
+
+condicao_pagamento (a_vista, parcelado)
+
+forma_pagamento (cheque, pix, ted, boleto)
+
+descricao_gasto
+
+data
+
+valor
+
+observacao
+
+4. Compras (633)
+
+Tabela: compras
+
+id (pk)
+
+fornecedor_id (fk → fornecedores)
+
+material
+
+valor_tabela
+
+tipo_coleta (coleta, entrega)
+
+observacao
+
+comprador_id (fk → usuários)
+
+5. Usuários e Permissões
+
+Tabela: usuarios
+
+id (pk)
+
+nome
+
+email
+
+senha_hash
+
+papel (ADMIN, COMPRADOR, VISUALIZADOR)
+
+ativo (bool)
+
+🧠 Regras de Negócio
+
+Apenas ADMIN pode:
+
+criar/editar/remover usuários e definir permissões.
+
+COMPRADOR pode:
+
+cadastrar fornecedores, compras e despesas.
+
+VISUALIZADOR tem acesso somente leitura.
+
+Validar CPF/CNPJ.
+
+Validar valor > 0.
+
+Data não pode ser futura.
+
+Exigir campos obrigatórios (nome_social, valor, data).
+
+🧭 Rotas Flask (CRUD REST)
+Rota	Método	Função	Permissão
+/	GET	Dashboard com resumo e gráficos	Todos logados
+/login	GET/POST	Autenticação de usuário	Público
+/logout	GET	Finaliza sessão	Logado
+/funcionarios	GET/POST/PUT/DELETE	CRUD Funcionários	ADMIN
+/fornecedores	GET/POST/PUT/DELETE	CRUD Fornecedores	COMPRADOR+ADMIN
+/despesas	GET/POST/PUT/DELETE	CRUD Despesas Adicionais	COMPRADOR+ADMIN
+/compras	GET/POST/PUT/DELETE	CRUD Compras	COMPRADOR+ADMIN
+/usuarios	GET/POST/PUT/DELETE	Gerenciar usuários	ADMIN
+🎨 Interface (tema MRX verde/preto)
+
+Layout:
+
+Navbar preta com logo MRX à esquerda (ESCUDO-removebg-preview.png)
+
+Botões e destaques verdes (#006600)
+
+Fundo da página em tom cinza-escuro (#1a1a1a)
+
+Cards verdes com texto branco
+
+Tabelas com cabeçalho preto e linhas alternadas verde-escuro
+
+Páginas:
+
+Login – logo MRX centralizado, fundo preto, formulário verde.
+
+Dashboard – resumo de compras, despesas e fornecedores (cards e gráficos).
+
+Cadastros – tabelas CRUD estilizadas.
+
+Usuários (Admin) – gerenciamento de permissões e status.
+
+📦 Estrutura de Pastas
+/mrx_gestao
+│
+├── app.py
+├── models.py
+├── forms.py
+├── auth.py
+├── static/
+│   ├── css/style.css
+│   ├── img/logo.png
+│   └── img/escudo.png
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── dashboard.html
+│   ├── funcionarios.html
+│   ├── fornecedores.html
+│   ├── despesas.html
+│   ├── compras.html
+│   └── usuarios.html
+└── mrx.db
+
+🚀 Execução
+
+Crie o projeto no Manus ou Replit (Python Flask template)
+
+Copie o prompt acima no assistente para gerar o sistema
+
+Rode com:
+
+flask db upgrade
+flask run --host=0.0.0.0 --port=8000
+
+
+Acesse o navegador:
+
+http://localhost:8000
+
+
+Login:
+admin@mrx.com.br
+ / Admin@123
+
+💡 Extras
+
+Dashboard com gráfico de barras (compras e despesas por mês).
+
+Exportar relatórios em PDF (usando reportlab).
+
+Filtragem por data e fornecedor.
+
+Upload opcional de comprovantes em despesas.

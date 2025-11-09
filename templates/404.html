@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Página não encontrada - MRX Gestão{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 2rem;">
+    <h1 style="font-size: 3rem; color: var(--cor-verde-claro); margin-bottom: 1rem;">404</h1>
+    <h2>Página não encontrada</h2>
+    <p style="margin-top: 1rem; color: var(--cor-cinza-claro);">A página que você está procurando não existe.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="margin-top: 1.5rem;">Voltar ao Dashboard</a>
+</div>
+{% endblock %}

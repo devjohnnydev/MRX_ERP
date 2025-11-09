@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MRX Gestão{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<p>Bem-vindo ao painel de controle do MRX Gestão!</p>
+
+<!-- Grid de Estatísticas -->
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <h4>Funcionários</h4>
+        <div class="value">{{ total_funcionarios }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Fornecedores</h4>
+        <div class="value">{{ total_fornecedores }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Compras</h4>
+        <div class="value">{{ total_compras }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Despesas</h4>
+        <div class="value">{{ total_despesas }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Valor Total de Compras</h4>
+        <div class="value">R$ {{ "%.2f"|format(compras_valor) }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <h4>Valor Total de Despesas</h4>
+        <div class="value">R$ {{ "%.2f"|format(despesas_valor) }}</div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="chart-container">
+        <h4>Compras por Mês (últimos 6 meses)</h4>
+        <canvas id="chartCompras"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <h4>Despesas por Mês (últimos 6 meses)</h4>
+        <canvas id="chartDespesas"></canvas>
+    </div>
+</div>
+
+<!-- Últimas Compras -->
+<div class="card">
+    <div class="card-header">
+        <h3>Últimas Compras</h3>
+    </div>
+    <div class="card-body">
+        {% if ultimas_compras %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>Fornecedor</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for compra in ultimas_compras %}
+                        <tr>
+                            <td>{{ compra.material }}</td>
+                            <td>{{ compra.fornecedor.nome_social }}</td>
+                            <td>R$ {{ "%.2f"|format(compra.valor_tabela) }}</td>
+                            <td>{{ compra.tipo_coleta }}</td>
+                            <td>{{ compra.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Nenhuma compra registrada.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Últimas Despesas -->
+<div class="card">
+    <div class="card-header">
+        <h3>Últimas Despesas</h3>
+    </div>
+    <div class="card-body">
+        {% if ultimas_despesas %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Forma de Pagamento</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for despesa in ultimas_despesas %}
+                        <tr>
+                            <td>{{ despesa.nome_social }}</td>
+                            <td>R$ {{ "%.2f"|format(despesa.valor) }}</td>
+                            <td>{{ despesa.forma_pagamento }}</td>
+                            <td>{{ despesa.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Nenhuma despesa registrada.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Dados para gráfico de compras
+    const comprasMeses = {{ compras_por_mes | tojson }};
+    const comprasLabels = comprasMeses.map(item => item[0]);
+    const comprasValues = comprasMeses.map(item => item[1] || 0);
+    
+    const ctxCompras = document.getElementById('chartCompras').getContext('2d');
+    new Chart(ctxCompras, {
+        type: 'bar',
+        data: {
+            labels: comprasLabels,
+            datasets: [{
+                label: 'Valor de Compras (R$)',
+                data: comprasValues,
+                backgroundColor: '#006600',
+                borderColor: '#00cc00',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#cccccc'
+                    },
+                    grid: {
+                        color: '#333333'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#cccccc'
+                    },
+                    grid: {
+                        color: '#333333'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#cccccc'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Dados para gráfico de despesas
+    const despesasMeses = {{ despesas_por_mes | tojson }};
+    const despesasLabels = despesasMeses.map(item => item[0]);
+    const despesasValues = despesasMeses.map(item => item[1] || 0);
+    
+    const ctxDespesas = document.getElementById('chartDespesas').getContext('2d');
+    new Chart(ctxDespesas, {
+        type: 'bar',
+        data: {
+            labels: despesasLabels,
+            datasets: [{
+                label: 'Valor de Despesas (R$)',
+                data: despesasValues,
+                backgroundColor: '#004d00',
+                borderColor: '#00cc00',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#cccccc'
+                    },
+                    grid: {
+                        color: '#333333'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#cccccc'
+                    },
+                    grid: {
+                        color: '#333333'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#cccccc'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

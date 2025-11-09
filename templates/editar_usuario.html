@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuário - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Editar Usuário</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('editar_usuario', id=usuario.id) }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nome">Nome *</label>
+                    <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ usuario.email }}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="papel">Papel *</label>
+                    <select id="papel" name="papel" required>
+                        {% for role in roles %}
+                            <option value="{{ role }}" {% if role == usuario.papel.name %}selected{% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="ativo" {% if usuario.ativo %}checked{% endif %}> Ativo
+                    </label>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <a href="{{ url_for('usuarios') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

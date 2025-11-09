@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Fornecedores - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Gerenciar Fornecedores</h3>
+    </div>
+    <div class="card-body">
+        <button class="btn btn-primary" onclick="toggleForm()">+ Novo Fornecedor</button>
+        
+        <!-- Formulário de Cadastro -->
+        <div id="formContainer" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background-color: var(--cor-cinza-escuro); border-radius: 4px;">
+            <h4 style="color: var(--cor-verde-claro); margin-bottom: 1rem;">Cadastrar Novo Fornecedor</h4>
+            <form method="POST" action="{{ url_for('fornecedores') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome_social">Nome Social *</label>
+                        <input type="text" id="nome_social" name="nome_social" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cnpj">CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="form-group">
+                        <label for="cpf">CPF</label>
+                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="tel" id="telefone" name="telefone">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="endereco_coleta">Endereço de Coleta</label>
+                        <input type="text" id="endereco_coleta" name="endereco_coleta">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco_emissao">Endereço de Emissão</label>
+                        <input type="text" id="endereco_emissao" name="endereco_emissao">
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tabela de Fornecedores -->
+        <div style="margin-top: 1.5rem;">
+            {% if fornecedores.items %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome Social</th>
+                            <th>CNPJ/CPF</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fornecedor in fornecedores.items %}
+                            <tr>
+                                <td>{{ fornecedor.nome_social }}</td>
+                                <td>{{ fornecedor.cnpj or fornecedor.cpf or '-' }}</td>
+                                <td>{{ fornecedor.telefone or '-' }}</td>
+                                <td>{{ fornecedor.email or '-' }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ url_for('editar_fornecedor', id=fornecedor.id) }}" class="btn btn-secondary btn-small">Editar</a>
+                                        <form method="POST" action="{{ url_for('deletar_fornecedor', id=fornecedor.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este fornecedor?');">
+                                            <button type="submit" class="btn btn-danger btn-small">Deletar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Paginação -->
+                {% if fornecedores.pages > 1 %}
+                    <ul class="pagination">
+                        {% if fornecedores.has_prev %}
+                            <li><a href="{{ url_for('fornecedores', page=fornecedores.prev_num) }}">« Anterior</a></li>
+                        {% endif %}
+                        
+                        {% for page_num in fornecedores.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num == fornecedores.page %}
+                                    <li><span class="active">{{ page_num }}</span></li>
+                                {% else %}
+                                    <li><a href="{{ url_for('fornecedores', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if fornecedores.has_next %}
+                            <li><a href="{{ url_for('fornecedores', page=fornecedores.next_num) }}">Próxima »</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Nenhum fornecedor cadastrado.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById('formContainer');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

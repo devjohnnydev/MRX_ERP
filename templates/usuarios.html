@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Gerenciar Usuários</h3>
+    </div>
+    <div class="card-body">
+        <button class="btn btn-primary" onclick="toggleForm()">+ Novo Usuário</button>
+        
+        <!-- Formulário de Cadastro -->
+        <div id="formContainer" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background-color: var(--cor-cinza-escuro); border-radius: 4px;">
+            <h4 style="color: var(--cor-verde-claro); margin-bottom: 1rem;">Cadastrar Novo Usuário</h4>
+            <form method="POST" action="{{ url_for('usuarios') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome *</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="senha">Senha *</label>
+                        <input type="password" id="senha" name="senha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="papel">Papel *</label>
+                        <select id="papel" name="papel" required>
+                            {% for role in roles %}
+                                <option value="{{ role }}">{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tabela de Usuários -->
+        <div style="margin-top: 1.5rem;">
+            {% if usuarios.items %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Papel</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios.items %}
+                            <tr>
+                                <td>{{ usuario.nome }}</td>
+                                <td>{{ usuario.email }}</td>
+                                <td>{{ usuario.papel.value }}</td>
+                                <td>
+                                    {% if usuario.ativo %}
+                                        <span class="text-success">✓ Ativo</span>
+                                    {% else %}
+                                        <span class="text-danger">✗ Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn btn-secondary btn-small">Editar</a>
+                                        {% if usuario.id != current_user.id %}
+                                            <form method="POST" action="{{ url_for('deletar_usuario', id=usuario.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este usuário?');">
+                                                <button type="submit" class="btn btn-danger btn-small">Deletar</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Paginação -->
+                {% if usuarios.pages > 1 %}
+                    <ul class="pagination">
+                        {% if usuarios.has_prev %}
+                            <li><a href="{{ url_for('usuarios', page=usuarios.prev_num) }}">« Anterior</a></li>
+                        {% endif %}
+                        
+                        {% for page_num in usuarios.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num == usuarios.page %}
+                                    <li><span class="active">{{ page_num }}</span></li>
+                                {% else %}
+                                    <li><a href="{{ url_for('usuarios', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if usuarios.has_next %}
+                            <li><a href="{{ url_for('usuarios', page=usuarios.next_num) }}">Próxima »</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">Nenhum usuário cadastrado.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById('formContainer');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MRX Gestão{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+                <img src="{{ url_for('static', filename='img/escudo.png') }}" alt="MRX Logo">
+                <span>MRX Gestão</span>
+            </a>
+            <div class="navbar-user">
+                <span>Bem-vindo, <strong>{{ current_user.nome }}</strong> ({{ current_user.papel.value }})</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-small">Sair</a>
+            </div>
+        </nav>
+
+        <!-- Container Principal -->
+        <div class="container-main">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>
+                        <a href="{{ url_for('dashboard') }}">📊 Dashboard</a>
+                    </li>
+                    
+                    {% if current_user.papel.value == 'ADMIN' %}
+                        <li {% if request.endpoint == 'funcionarios' %}class="active"{% endif %}>
+                            <a href="{{ url_for('funcionarios') }}">👥 Funcionários</a>
+                        </li>
+                        <li {% if request.endpoint == 'usuarios' %}class="active"{% endif %}>
+                            <a href="{{ url_for('usuarios') }}">🔐 Usuários</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if current_user.papel.value in ['ADMIN', 'COMPRADOR'] %}
+                        <li {% if request.endpoint == 'fornecedores' %}class="active"{% endif %}>
+                            <a href="{{ url_for('fornecedores') }}">🏢 Fornecedores</a>
+                        </li>
+                        <li {% if request.endpoint == 'compras' %}class="active"{% endif %}>
+                            <a href="{{ url_for('compras') }}">🛒 Compras</a>
+                        </li>
+                        <li {% if request.endpoint == 'despesas' %}class="active"{% endif %}>
+                            <a href="{{ url_for('despesas') }}">💰 Despesas</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </aside>
+
+            <!-- Conteúdo Principal -->
+            <main class="content">
+                <!-- Alertas -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Bloco de Conteúdo -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    {% else %}
+        <!-- Login -->
+        {% block login %}{% endblock %}
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Compra - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Editar Compra</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('editar_compra', id=compra.id) }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fornecedor_id">Fornecedor</label>
+                    <select id="fornecedor_id" name="fornecedor_id" disabled>
+                        {% for fornecedor in fornecedores %}
+                            <option value="{{ fornecedor.id }}" {% if fornecedor.id == compra.fornecedor_id %}selected{% endif %}>
+                                {{ fornecedor.nome_social }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="material">Material *</label>
+                    <input type="text" id="material" name="material" value="{{ compra.material }}" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="valor_tabela">Valor *</label>
+                    <input type="number" id="valor_tabela" name="valor_tabela" value="{{ compra.valor_tabela }}" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipo_coleta">Tipo de Coleta *</label>
+                    <select id="tipo_coleta" name="tipo_coleta" required>
+                        <option value="coleta" {% if compra.tipo_coleta == 'coleta' %}selected{% endif %}>Coleta</option>
+                        <option value="entrega" {% if compra.tipo_coleta == 'entrega' %}selected{% endif %}>Entrega</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group form-row full">
+                <label for="observacao">Observação</label>
+                <textarea id="observacao" name="observacao">{{ compra.observacao or '' }}</textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <a href="{{ url_for('compras') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

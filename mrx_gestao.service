@@ -1,0 +1,33 @@
+[Unit]
+Description=MRX Gestão - Gunicorn Application Server
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mrx_gestao
+Environment="PATH=/var/www/mrx_gestao/venv/bin"
+Environment="FLASK_ENV=production"
+Environment="FLASK_APP=app.py"
+ExecStart=/var/www/mrx_gestao/venv/bin/gunicorn \
+    --config /var/www/mrx_gestao/gunicorn_config.py \
+    --access-logfile /var/log/mrx_gestao/gunicorn_access.log \
+    --error-logfile /var/log/mrx_gestao/gunicorn_error.log \
+    app:app
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mrx_gestao
+
+[Install]
+WantedBy=multi-user.target

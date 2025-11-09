@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Despesa - MRX Gestão{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Editar Despesa</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('editar_despesa', id=despesa.id) }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nome_social">Nome Social *</label>
+                    <input type="text" id="nome_social" name="nome_social" value="{{ despesa.nome_social }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="valor">Valor *</label>
+                    <input type="number" id="valor" name="valor" value="{{ despesa.valor }}" step="0.01" min="0" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="data">Data *</label>
+                    <input type="date" id="data" name="data" value="{{ despesa.data.strftime('%Y-%m-%d') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="forma_pagamento">Forma de Pagamento</label>
+                    <select id="forma_pagamento" name="forma_pagamento">
+                        <option value="">Selecione</option>
+                        <option value="cheque" {% if despesa.forma_pagamento == 'cheque' %}selected{% endif %}>Cheque</option>
+                        <option value="pix" {% if despesa.forma_pagamento == 'pix' %}selected{% endif %}>PIX</option>
+                        <option value="ted" {% if despesa.forma_pagamento == 'ted' %}selected{% endif %}>TED</option>
+                        <option value="boleto" {% if despesa.forma_pagamento == 'boleto' %}selected{% endif %}>Boleto</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endereco_rua">Rua</label>
+                    <input type="text" id="endereco_rua" name="endereco_rua" value="{{ despesa.endereco_rua or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="endereco_numero">Número</label>
+                    <input type="text" id="endereco_numero" name="endereco_numero" value="{{ despesa.endereco_numero or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endereco_cidade">Cidade</label>
+                    <input type="text" id="endereco_cidade" name="endereco_cidade" value="{{ despesa.endereco_cidade or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="endereco_estado">Estado</label>
+                    <input type="text" id="endereco_estado" name="endereco_estado" value="{{ despesa.endereco_estado or '' }}" maxlength="2">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endereco_cep">CEP</label>
+                    <input type="text" id="endereco_cep" name="endereco_cep" value="{{ despesa.endereco_cep or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" value="{{ despesa.telefone or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ despesa.email or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="banco">Banco</label>
+                    <input type="text" id="banco" name="banco" value="{{ despesa.banco or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="agencia">Agência</label>
+                    <input type="text" id="agencia" name="agencia" value="{{ despesa.agencia or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="conta">Conta</label>
+                    <input type="text" id="conta" name="conta" value="{{ despesa.conta or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="chave_pix">Chave PIX</label>
+                    <input type="text" id="chave_pix" name="chave_pix" value="{{ despesa.chave_pix or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="condicao_pagamento">Condição de Pagamento</label>
+                    <select id="condicao_pagamento" name="condicao_pagamento">
+                        <option value="">Selecione</option>
+                        <option value="a_vista" {% if despesa.condicao_pagamento == 'a_vista' %}selected{% endif %}>À Vista</option>
+                        <option value="parcelado" {% if despesa.condicao_pagamento == 'parcelado' %}selected{% endif %}>Parcelado</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group form-row full">
+                <label for="descricao_gasto">Descrição do Gasto</label>
+                <textarea id="descricao_gasto" name="descricao_gasto">{{ despesa.descricao_gasto or '' }}</textarea>
+            </div>
+            
+            <div class="form-group form-row full">
+                <label for="observacao">Observação</label>
+                <textarea id="observacao" name="observacao">{{ despesa.observacao or '' }}</textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <a href="{{ url_for('despesas') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso negado - MRX Gestão{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 2rem;">
+    <h1 style="font-size: 3rem; color: var(--cor-perigo); margin-bottom: 1rem;">403</h1>
+    <h2>Acesso negado</h2>
+    <p style="margin-top: 1rem; color: var(--cor-cinza-claro);">Você não tem permissão para acessar esta página.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="margin-top: 1.5rem;">Voltar ao Dashboard</a>
+</div>
+{% endblock %}
